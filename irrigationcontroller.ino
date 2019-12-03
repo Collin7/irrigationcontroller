@@ -1,15 +1,11 @@
+#include <Credentials.h>
 #include <ESP8266WiFi.h>
 #include <ArduinoOTA.h>
 #include <PubSubClient.h>
 #include <ESP8266SSDP.h>
 
 const char* host = "Irrigation Controller";
-const char* ssid = "Morpheus";
-const char* password = "b5eea63f65";
-const char* mqtt_user = "CDW-SmartHouse";
-const char* mqtt_pass = "!M0rpheus";
 
-#define mqtt_server "192.168.0.3"
 #define pooltopup_topic "irrigation/controller/pool"
 #define zone1_topic "irrigation/controller/zone1"
 #define zone2_topic "irrigation/controller/zone2"
@@ -45,7 +41,7 @@ void setup() {
 
   setup_wifi();
 
-  client.setServer(mqtt_server, 1883);
+  client.setServer(MQTT_SERVER, MQTT_PORT);
   client.setCallback(callback); //callback is the function that gets called for a topic sub
 
   ArduinoOTA.setHostname("Irrigation Controller");
@@ -104,10 +100,10 @@ void setup_wifi() {
   delay(10);
   Serial.println();
   Serial.print("Connecting to ");
-  Serial.println(ssid);
+  Serial.println(WIFI_SSID);
 
   WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -125,7 +121,7 @@ void setup_wifi() {
 void reconnect() {
   //Reconnect to Wifi and to MQTT. If Wifi is already connected, then autoconnect doesn't do anything.
   Serial.print("Attempting MQTT connection...");
-  if (client.connect(host, mqtt_user, mqtt_pass)) {
+  if (client.connect(host, MQTT_USERNAME, MQTT_PASSWORD)) {
     Serial.println("connected");
     client.subscribe("irrigation/controller/#");
   } else {
