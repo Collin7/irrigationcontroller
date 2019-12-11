@@ -10,6 +10,7 @@ const char* host = "Irrigation Controller";
 #define zone1_topic "irrigation/controller/zone1"
 #define zone2_topic "irrigation/controller/zone2"
 #define zone3_topic "irrigation/controller/zone3"
+#define restart_topic "irrigation/controller/restart"
 
 //This can be used to output the date the code was compiled
 const char compile_date[] = __DATE__ " " __TIME__;
@@ -61,7 +62,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   //Handle mqtt messages received by this NodeMCU
   payload[length] = '\0';
   strTopic = String((char*)topic);
-Serial.println("Topic " + strTopic);
+  Serial.println("Topic " + strTopic);
   String command = String((char*)payload);
   Serial.println("Command " + command);
   if (strTopic == pooltopup_topic) {
@@ -92,6 +93,9 @@ Serial.println("Topic " + strTopic);
     } else {
       digitalWrite(ZONE_3, HIGH);
     }
+  }
+  else if (strTopic == restart_topic) {
+    restartESP();
   }
 }
 
@@ -131,4 +135,8 @@ void reconnect() {
     // Wait 5 seconds before retrying
     delay(5000);
   }
+}
+
+void restartESP() {
+  ESP.restart();
 }
